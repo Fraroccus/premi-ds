@@ -1,4 +1,4 @@
-const { getSupabase } = require('../_supabase');
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -14,10 +14,16 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Metodo non consentito' });
   }
 
-  try {
-    const supabase = getSupabase();
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-    // Ottieni stato attuale
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({ error: 'Variabili Supabase mancanti su Vercel.' });
+  }
+
+  try {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const { data: statusRows, error: fetchError } = await supabase
       .from('voting_status')
       .select('id, voting_open')
@@ -25,12 +31,10 @@ module.exports = async function handler(req, res) {
       .limit(1);
 
     if (fetchError) {
-      console.error('Errore fetch voting_status:', fetchError);
       return res.status(500).json({ error: `Errore database: ${fetchError.message}` });
     }
 
     if (!statusRows || statusRows.length === 0) {
-      // Inizializza se non presente
       const { data: inserted, error: insertError } = await supabase
         .from('voting_status')
         .insert([{ id: 1, voting_open: false, updated_at: new Date().toISOString() }])
@@ -55,15 +59,11 @@ module.exports = async function handler(req, res) {
       .single();
 
     if (updateError) {
-      console.error('Errore update voting_status:', updateError);
-      return res.status(500).json({ 
-        error: `Errore modifica stato: ${updateError.message}. Controlla la policy UPDATE su Supabase.` 
-      });
+      return res.status(500).json({ error: `Errore modifica stato: ${updateError.message}` });
     }
 
     return res.status(200).json({ votingOpen: data.voting_open });
   } catch (error) {
-    console.error('Toggle voting handler error:', error);
     return res.status(500).json({ error: error.message || 'Errore operazione' });
   }
 };

@@ -1,4 +1,4 @@
-const { getSupabase } = require('./_supabase');
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -14,6 +14,13 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Metodo non consentito' });
   }
 
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({ error: 'Variabili Supabase mancanti su Vercel.' });
+  }
+
   try {
     const { nickname, votes } = req.body || {};
 
@@ -26,7 +33,7 @@ module.exports = async function handler(req, res) {
     }
 
     const cleanNickname = nickname.trim();
-    const supabase = getSupabase();
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Verifica stato votazioni
     const { data: statusRows, error: statusError } = await supabase
@@ -36,7 +43,6 @@ module.exports = async function handler(req, res) {
       .limit(1);
 
     if (statusError) {
-      console.error('Errore voting_status:', statusError);
       return res.status(500).json({ error: `Errore database: ${statusError.message}` });
     }
 
@@ -51,7 +57,6 @@ module.exports = async function handler(req, res) {
       .ilike('nickname', cleanNickname);
 
     if (checkError) {
-      console.error('Errore verifica voti esistenti:', checkError);
       return res.status(500).json({ error: `Errore verifica voti: ${checkError.message}` });
     }
 
@@ -65,15 +70,11 @@ module.exports = async function handler(req, res) {
       .insert([{ nickname: cleanNickname, votes }]);
 
     if (insertError) {
-      console.error('Errore inserimento voto:', insertError);
-      return res.status(500).json({ 
-        error: `Errore salvataggio voto: ${insertError.message}. Controlla la policy INSERT su Supabase.` 
-      });
+      return res.status(500).json({ error: `Errore salvataggio voto: ${insertError.message}` });
     }
 
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Vote handler error:', error);
-    return res.status(500).json({ error: error.message || 'Errore durante l\'invio del voto' });
+    return res.status(500).json({ error: error.message || 'Errore invio voto' });
   }
 };

@@ -1,4 +1,4 @@
-const { getSupabase } = require('./_supabase');
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -8,10 +8,13 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
 
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
   const diagnostics = {
-    supabaseUrlSet: Boolean(process.env.SUPABASE_URL),
-    supabaseUrlPrefix: process.env.SUPABASE_URL ? process.env.SUPABASE_URL.slice(0, 15) + '...' : null,
-    supabaseKeySet: Boolean(process.env.SUPABASE_ANON_KEY),
+    supabaseUrlSet: Boolean(supabaseUrl),
+    supabaseUrlPrefix: supabaseUrl ? supabaseUrl.slice(0, 18) + '...' : null,
+    supabaseKeySet: Boolean(supabaseKey),
     votingStatusTable: 'unknown',
     votesTable: 'unknown',
     status: 'checking',
@@ -21,14 +24,14 @@ module.exports = async function handler(req, res) {
   if (!diagnostics.supabaseUrlSet || !diagnostics.supabaseKeySet) {
     diagnostics.status = 'MISSING_ENV_VARS';
     diagnostics.instructions.push(
-      'Configura SUPABASE_URL e SUPABASE_ANON_KEY nelle impostazioni di Vercel (Settings -> Environment Variables) e assicurati di spuntare Production.',
-      'IMPORTANTE: Dopo aver salvato le variabili su Vercel, devi effettuare un REDEPLOY per renderle attive.'
+      'Configura SUPABASE_URL e SUPABASE_ANON_KEY nelle impostazioni di Vercel (Settings -> Environment Variables, spuntando Production).',
+      'IMPORTANTE: Dopo aver salvato le variabili su Vercel, devi cliccare su Deployments -> ... -> REDEPLOY.'
     );
-    return res.status(500).json(diagnostics);
+    return res.status(200).json(diagnostics);
   }
 
   try {
-    const supabase = getSupabase();
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Test voting_status
     const { data: statusRows, error: statusError } = await supabase
@@ -42,9 +45,8 @@ module.exports = async function handler(req, res) {
         'Tabella voting_status non accessibile o inesistente. Esegui lo script SQL da supabase-schema.sql nel SQL Editor di Supabase.'
       );
     } else {
-      diagnostics.votingStatusTable = `OK (${statusRows ? statusRows.length : 0} righe trovate)`;
+      diagnostics.votingStatusTable = `OK (${statusRows ? statusRows.length : 0} righe)`;
       if (statusRows.length === 0) {
-        // Auto-fix: inserisci riga iniziale
         await supabase.from('voting_status').insert([{ id: 1, voting_open: true }]);
         diagnostics.votingStatusTable += ' -> Inserita riga iniziale automaticamente!';
       }
@@ -67,15 +69,15 @@ module.exports = async function handler(req, res) {
 
     if (statusError || votesError) {
       diagnostics.status = 'DATABASE_TABLE_ERROR';
-      return res.status(500).json(diagnostics);
+      return res.status(200).json(diagnostics);
     }
 
     diagnostics.status = 'ALL_SYSTEMS_OPERATIONAL';
-    diagnostics.message = 'Connessione a Supabase riuscita al 100%! Tabelle configurate e pronte.';
+    diagnostics.message = 'Connessione a Supabase riuscita! Tabelle configurate e pronte.';
     return res.status(200).json(diagnostics);
   } catch (err) {
     diagnostics.status = 'CONNECTION_EXCEPTION';
     diagnostics.error = err.message;
-    return res.status(500).json(diagnostics);
+    return res.status(200).json(diagnostics);
   }
 };

@@ -1,4 +1,4 @@
-const { getSupabase } = require('./_supabase');
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -14,10 +14,18 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Metodo non consentito' });
   }
 
-  try {
-    const supabase = getSupabase();
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-    // Ottieni stato votazioni (senza forzare .single())
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({
+      error: `Variabili mancanti su Vercel: SUPABASE_URL=${Boolean(supabaseUrl)}, SUPABASE_ANON_KEY=${Boolean(supabaseKey)}. Inseriscile su Vercel e fai REDEPLOY.`
+    });
+  }
+
+  try {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const { data: statusRows, error: statusError } = await supabase
       .from('voting_status')
       .select('id, voting_open')
@@ -25,30 +33,22 @@ module.exports = async function handler(req, res) {
       .limit(1);
 
     if (statusError) {
-      console.error('Errore voting_status:', statusError);
-      return res.status(500).json({ 
-        error: `Errore Supabase su voting_status: ${statusError.message}. Verifica di aver eseguito supabase-schema.sql.` 
-      });
+      return res.status(500).json({ error: 'Errore tabella voting_status: ' + statusError.message });
     }
 
     let votingOpen = true;
     if (!statusRows || statusRows.length === 0) {
-      // Auto-inserimento riga iniziale se la tabella è vuota
       await supabase.from('voting_status').insert([{ id: 1, voting_open: true }]);
     } else {
       votingOpen = Boolean(statusRows[0].voting_open);
     }
 
-    // Conta votanti
     const { count, error: countError } = await supabase
       .from('votes')
       .select('id', { count: 'exact', head: true });
 
     if (countError) {
-      console.error('Errore conteggio voti:', countError);
-      return res.status(500).json({ 
-        error: `Errore Supabase su tabella votes: ${countError.message}. Verifica le policy RLS.` 
-      });
+      return res.status(500).json({ error: 'Errore tabella votes: ' + countError.message });
     }
 
     return res.status(200).json({
@@ -56,7 +56,6 @@ module.exports = async function handler(req, res) {
       totalVoters: count || 0
     });
   } catch (error) {
-    console.error('Status handler error:', error);
-    return res.status(500).json({ error: error.message || 'Errore del server' });
+    return res.status(500).json({ error: error.message || 'Errore server' });
   }
 };

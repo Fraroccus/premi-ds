@@ -1,4 +1,4 @@
-const { getSupabase } = require('../_supabase');
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -14,23 +14,25 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Metodo non consentito' });
   }
 
-  try {
-    const supabase = getSupabase();
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-    // Elimina tutti i voti
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({ error: 'Variabili Supabase mancanti su Vercel.' });
+  }
+
+  try {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const { error: deleteError } = await supabase
       .from('votes')
       .delete()
       .neq('id', 0);
 
     if (deleteError) {
-      console.error('Errore delete votes:', deleteError);
-      return res.status(500).json({ 
-        error: `Errore reset voti: ${deleteError.message}. Controlla la policy DELETE su tabella votes in Supabase.` 
-      });
+      return res.status(500).json({ error: `Errore reset voti: ${deleteError.message}` });
     }
 
-    // Reset o inserimento voting_status
     const { data: statusRows, error: fetchError } = await supabase
       .from('voting_status')
       .select('id')
@@ -52,7 +54,6 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Reset handler error:', error);
     return res.status(500).json({ error: error.message || 'Errore reset' });
   }
 };
