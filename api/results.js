@@ -1,9 +1,9 @@
-const { getSupabase } = require('./_supabase');
-const fs = require('fs');
-const path = require('path');
+import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+import path from 'path';
 
-module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept');
@@ -16,8 +16,15 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Metodo non consentito' });
   }
 
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return res.status(500).json({ error: 'Variabili Supabase mancanti su Vercel.' });
+  }
+
   try {
-    const supabase = getSupabase();
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Verifica stato votazioni
     const { data: statusRows, error: statusError } = await supabase
@@ -27,7 +34,6 @@ module.exports = async function handler(req, res) {
       .limit(1);
 
     if (statusError) {
-      console.error('Errore voting_status:', statusError);
       return res.status(500).json({ error: `Errore database: ${statusError.message}` });
     }
 
@@ -39,13 +45,8 @@ module.exports = async function handler(req, res) {
     }
 
     // Carica configurazione
-    let config;
-    try {
-      config = require('../config.json');
-    } catch {
-      const configPath = path.join(process.cwd(), 'config.json');
-      config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    }
+    const configPath = path.join(process.cwd(), 'config.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
     // Ottieni tutti i voti
     const { data: votesData, error: votesError } = await supabase
@@ -53,7 +54,6 @@ module.exports = async function handler(req, res) {
       .select('votes');
 
     if (votesError) {
-      console.error('Errore recupero voti:', votesError);
       return res.status(500).json({ error: `Errore recupero voti: ${votesError.message}` });
     }
 
@@ -61,10 +61,9 @@ module.exports = async function handler(req, res) {
     const results = calculateResults(config.categories, votesData || []);
     return res.status(200).json(results);
   } catch (error) {
-    console.error('Results handler error:', error);
     return res.status(500).json({ error: error.message || 'Errore calcolo risultati' });
   }
-};
+}
 
 function calculateResults(categories, votesData) {
   const results = {};
