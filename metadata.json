@@ -1,0 +1,6 @@
+{
+  "name": "Premi Bonobi",
+  "description": "Sistema di votazione per premi stile Game Awards con categorie, nomination, voting e presentazione risultati.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

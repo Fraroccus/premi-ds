@@ -1,0 +1,245 @@
+{
+  "categories": [
+    {
+      "id": "top-ritardato",
+      "name": "Top Ritardato",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-ragebaiter",
+      "name": "Top Ragebaiter",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-ragebaitabile",
+      "name": "Top Ragebaitabile",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-politically-incorrect",
+      "name": "Top Politically Incorrect",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-incel",
+      "name": "Top Incel",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-intrattenimento",
+      "name": "Top Intrattenimento",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-gay",
+      "name": "Top Gay",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-take-di-merda",
+      "name": "Top Take di Merda",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-ludopatia",
+      "name": "Top Ludopatia",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-forte-ai-giochi",
+      "name": "Top Forte ai Giochi",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-scarso-ai-giochi",
+      "name": "Top Scarso ai Giochi",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-peddi",
+      "name": "Top Peddi",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"},
+        {"id": "blackroll", "name": "Blackroll", "image": "images/blackroll.jpg"}
+      ]
+    },
+    {
+      "id": "lavoratore-piu-duro",
+      "name": "Lavoratore più Duro",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-unemployed-friend",
+      "name": "Top Unemployed Friend",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    },
+    {
+      "id": "top-shotcaller",
+      "name": "Top Shotcaller",
+      "nominations": [
+        {"id": "roccus", "name": "Roccus", "image": "images/roccus.jpg"},
+        {"id": "frolyc", "name": "Frolyc", "image": "images/frolyc.jpg"},
+        {"id": "fiuryk", "name": "Fiuryk", "image": "images/fiuryk.jpg"},
+        {"id": "maldo", "name": "Maldo", "image": "images/maldo.jpg"},
+        {"id": "gabusi", "name": "Gabusi", "image": "images/gabusi.jpg"},
+        {"id": "markkabbate", "name": "Markkabbate", "image": "images/markkabbate.jpg"},
+        {"id": "andyberry", "name": "Andyberry", "image": "images/andyberry.jpg"},
+        {"id": "halozkiller", "name": "Halozkiller", "image": "images/halozkiller.jpg"},
+        {"id": "peddi", "name": "Peddi", "image": "images/peddi.jpg"},
+        {"id": "bets", "name": "Bets", "image": "images/bets.jpg"}
+      ]
+    }
+  ]
+}

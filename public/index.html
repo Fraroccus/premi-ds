@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premi Bonobi</title>
+    <meta name="description" content="Sistema di votazione per premi stile Game Awards con categorie, nomination, voting e presentazione risultati.">
+    <meta property="og:title" content="Premi Bonobi">
+    <meta property="og:description" content="Sistema di votazione per premi stile Game Awards con categorie, nomination, voting e presentazione risultati.">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Pulsante Impostazioni in alto a destra -->
+    <button id="open-settings-btn" class="settings-top-btn" title="Impostazioni">⚙️ Impostazioni</button>
+
+    <!-- Schermata Login -->
+    <div id="login-screen" class="screen active">
+        <div class="container">
+            <h1>🏆 Sistema Votazione Premi</h1>
+            <div class="login-box">
+                <h2>Inserisci il tuo nickname</h2>
+                <input type="text" id="nickname-input" placeholder="Il tuo nickname" maxlength="20">
+                <button id="login-btn">Entra</button>
+                <p id="login-error" class="error"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schermata Votazione -->
+    <div id="voting-screen" class="screen">
+        <div class="container">
+            <div class="header">
+                <h1>🏆 Votazioni</h1>
+                <p class="welcome">Benvenuto, <span id="user-nickname"></span>!</p>
+            </div>
+            
+            <div id="categories-container"></div>
+            
+            <button id="submit-vote-btn" class="submit-btn">Invia Votazione</button>
+        </div>
+    </div>
+
+    <!-- Schermata Votazioni Chiuse -->
+    <div id="closed-screen" class="screen">
+        <div class="container">
+            <h1>🏆 Votazioni Chiuse</h1>
+            <p class="message">Le votazioni sono attualmente chiuse.</p>
+        </div>
+    </div>
+
+    <!-- Schermata Grazie -->
+    <div id="thank-you-screen" class="screen">
+        <div class="container">
+            <h1>✅ Grazie!</h1>
+            <p class="message">Il tuo voto è stato registrato con successo.</p>
+        </div>
+    </div>
+
+    <!-- Schermata Admin / Impostazioni -->
+    <div id="admin-screen" class="screen">
+        <div class="container admin-container">
+            <div class="admin-top-bar">
+                <button id="admin-back-btn" class="back-to-nickname-btn">← Torna al Nickname</button>
+            </div>
+            <h1>⚙️ Impostazioni</h1>
+            <div class="admin-controls">
+                <button id="toggle-voting-btn" class="admin-btn">Chiudi/Apri Votazioni</button>
+                <button id="reset-votes-btn" class="admin-btn danger">Reset Votazioni</button>
+                <button id="show-results-btn" class="admin-btn">Mostra Risultati</button>
+                <p id="voting-status"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Password Impostazioni -->
+    <div id="password-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>🔒 Accesso Impostazioni</h3>
+                <button id="modal-close-btn" class="modal-close" aria-label="Chiudi">&times;</button>
+            </div>
+            <p class="modal-desc">Inserisci la password per accedere al pannello impostazioni:</p>
+            <form id="password-form" onsubmit="return false;">
+                <input type="password" id="admin-password-input" placeholder="Password" autocomplete="current-password">
+                <p id="password-error" class="error"></p>
+                <div class="modal-actions">
+                    <button type="button" id="modal-cancel-btn" class="btn-secondary">Annulla</button>
+                    <button type="submit" id="modal-submit-btn" class="btn-primary">Accedi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Schermata Presentazione Risultati -->
+    <div id="presentation-screen" class="screen">
+        <div class="presentation-container">
+            <div id="slideshow-container"></div>
+            <div class="slideshow-controls">
+                <button id="prev-slide" class="slide-btn">← Precedente</button>
+                <span id="slide-counter"></span>
+                <button id="next-slide" class="slide-btn">Successiva →</button>
+            </div>
+            <button id="exit-presentation" class="exit-btn">Esci dalla Presentazione</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
