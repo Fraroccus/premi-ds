@@ -1,65 +1,68 @@
-const { createClient } = require('@supabase/supabase-js');
+const { getSupabase } = require('./_supabase');
 const fs = require('fs');
 const path = require('path');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || ''
-);
-
 module.exports = async function handler(req, res) {
-  // Abilita CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
-  if (req.method === 'GET') {
-    try {
-      // Verifica stato votazioni
-      const { data: statusData, error: statusError } = await supabase
-        .from('voting_status')
-        .select('voting_open')
-        .order('id', { ascending: true })
-        .limit(1)
-        .single();
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Metodo non consentito' });
+  }
 
-      if (statusError) throw statusError;
+  try {
+    const supabase = getSupabase();
 
-      const isAdmin = req.query && (req.query.admin === 'true' || req.query.admin === '1');
-      if (statusData.voting_open && !isAdmin) {
-        return res.status(403).json({ error: 'Le votazioni sono ancora aperte' });
-      }
+    // Verifica stato votazioni
+    const { data: statusRows, error: statusError } = await supabase
+      .from('voting_status')
+      .select('voting_open')
+      .order('id', { ascending: true })
+      .limit(1);
 
-      // Carica config
-      let config;
-      try {
-        config = require('../config.json');
-      } catch {
-        const configPath = path.join(process.cwd(), 'config.json');
-        config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      }
-
-      // Ottieni tutti i voti
-      const { data: votesData, error: votesError } = await supabase
-        .from('votes')
-        .select('votes');
-
-      if (votesError) throw votesError;
-
-      // Calcola risultati
-      const results = calculateResults(config.categories, votesData || []);
-      res.status(200).json(results);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    if (statusError) {
+      console.error('Errore voting_status:', statusError);
+      return res.status(500).json({ error: `Errore database: ${statusError.message}` });
     }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+
+    const votingOpen = statusRows && statusRows.length > 0 ? statusRows[0].voting_open : true;
+    const isAdmin = req.query && (req.query.admin === 'true' || req.query.admin === '1');
+
+    if (votingOpen && !isAdmin) {
+      return res.status(403).json({ error: 'Le votazioni sono ancora aperte. Chiudile per vedere i risultati.' });
+    }
+
+    // Carica configurazione
+    let config;
+    try {
+      config = require('../config.json');
+    } catch {
+      const configPath = path.join(process.cwd(), 'config.json');
+      config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    }
+
+    // Ottieni tutti i voti
+    const { data: votesData, error: votesError } = await supabase
+      .from('votes')
+      .select('votes');
+
+    if (votesError) {
+      console.error('Errore recupero voti:', votesError);
+      return res.status(500).json({ error: `Errore recupero voti: ${votesError.message}` });
+    }
+
+    // Calcola risultati
+    const results = calculateResults(config.categories, votesData || []);
+    return res.status(200).json(results);
+  } catch (error) {
+    console.error('Results handler error:', error);
+    return res.status(500).json({ error: error.message || 'Errore calcolo risultati' });
   }
 };
 
@@ -70,12 +73,10 @@ function calculateResults(categories, votesData) {
     const categoryId = category.id;
     const scores = {};
 
-    // Inizializza i punteggi
     category.nominations.forEach(nom => {
       scores[nom.id] = 0;
     });
 
-    // Calcola i punteggi
     votesData.forEach(voteRecord => {
       const categoryVote = voteRecord.votes ? voteRecord.votes[categoryId] : null;
       if (categoryVote) {
@@ -85,7 +86,6 @@ function calculateResults(categories, votesData) {
       }
     });
 
-    // Crea classifica ordinata
     const ranking = Object.entries(scores)
       .map(([nominationId, score]) => {
         const nomination = category.nominations.find(n => n.id === nominationId) || {

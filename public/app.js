@@ -209,10 +209,10 @@ async function handleLogin() {
             loadVotingScreen();
             showScreen('voting-screen');
         } else {
-            errorElement.textContent = data.error;
+            errorElement.textContent = data.error || 'Errore durante la registrazione';
         }
     } catch (error) {
-        errorElement.textContent = 'Errore di connessione';
+        errorElement.textContent = 'Errore di connessione: ' + error.message;
     }
 }
 
@@ -469,10 +469,10 @@ async function handleSubmitVote() {
         if (response.ok) {
             showScreen('thank-you-screen');
         } else {
-            alert(data.error);
+            alert('Errore: ' + (data.error || 'Impossibile inviare il voto'));
         }
     } catch (error) {
-        alert('Errore nell\'invio del voto');
+        alert('Errore di connessione nell\'invio del voto: ' + error.message);
     }
 }
 
@@ -483,9 +483,13 @@ async function handleToggleVoting() {
             method: 'POST'
         });
         const data = await response.json();
+        if (!response.ok) {
+            alert('Errore: ' + (data.error || 'Operazione fallita'));
+            return;
+        }
         updateAdminStatus();
     } catch (error) {
-        alert('Errore nell\'operazione');
+        alert('Errore nell\'operazione: ' + error.message);
     }
 }
 
@@ -499,10 +503,15 @@ async function handleResetVotes() {
         const response = await fetch('/api/admin/reset', {
             method: 'POST'
         });
+        const data = await response.json();
+        if (!response.ok) {
+            alert('Errore nel reset: ' + (data.error || 'Operazione non riuscita'));
+            return;
+        }
         alert('Votazioni resettate con successo');
         updateAdminStatus();
     } catch (error) {
-        alert('Errore nel reset');
+        alert('Errore nel reset: ' + error.message);
     }
 }
 
@@ -510,17 +519,18 @@ async function handleResetVotes() {
 async function handleShowResults() {
     try {
         const response = await fetch('/api/results');
+        const data = await response.json();
         
         if (!response.ok) {
-            alert('Le votazioni devono essere chiuse per vedere i risultati');
+            alert(data.error || 'Le votazioni devono essere chiuse per vedere i risultati');
             return;
         }
         
-        results = await response.json();
+        results = data;
         createSlideshow();
         showScreen('presentation-screen');
     } catch (error) {
-        alert('Errore nel caricamento dei risultati');
+        alert('Errore nel caricamento dei risultati: ' + error.message);
     }
 }
 
@@ -529,14 +539,27 @@ async function updateAdminStatus() {
     try {
         const response = await fetch('/api/status');
         const status = await response.json();
-        
+        const statusElem = document.getElementById('voting-status');
+        if (!statusElem) return;
+
+        if (!response.ok) {
+            statusElem.textContent = '⚠️ ' + (status.error || 'Errore database');
+            statusElem.style.color = '#e74c3c';
+            return;
+        }
+
+        statusElem.style.color = '#667eea';
         const statusText = status.votingOpen ? 
             `Votazioni APERTE - ${status.totalVoters} votanti` :
             `Votazioni CHIUSE - ${status.totalVoters} votanti`;
         
-        document.getElementById('voting-status').textContent = statusText;
+        statusElem.textContent = statusText;
     } catch (error) {
-        console.error('Errore aggiornamento stato');
+        const statusElem = document.getElementById('voting-status');
+        if (statusElem) {
+            statusElem.textContent = '⚠️ Errore connessione status';
+            statusElem.style.color = '#e74c3c';
+        }
     }
 }
 

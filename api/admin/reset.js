@@ -1,48 +1,58 @@
-const { createClient } = require('@supabase/supabase-js');
-
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || ''
-);
+const { getSupabase } = require('../_supabase');
 
 module.exports = async function handler(req, res) {
-  // Abilita CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
-  if (req.method === 'POST') {
-    try {
-      // Elimina tutti i voti
-      const { error: deleteError } = await supabase
-        .from('votes')
-        .delete()
-        .neq('id', 0); // Delete all
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Metodo non consentito' });
+  }
 
-      if (deleteError) throw deleteError;
+  try {
+    const supabase = getSupabase();
 
-      // Reset stato votazioni
-      const { error: updateError } = await supabase
+    // Elimina tutti i voti
+    const { error: deleteError } = await supabase
+      .from('votes')
+      .delete()
+      .neq('id', 0);
+
+    if (deleteError) {
+      console.error('Errore delete votes:', deleteError);
+      return res.status(500).json({ 
+        error: `Errore reset voti: ${deleteError.message}. Controlla la policy DELETE su tabella votes in Supabase.` 
+      });
+    }
+
+    // Reset o inserimento voting_status
+    const { data: statusRows, error: fetchError } = await supabase
+      .from('voting_status')
+      .select('id')
+      .limit(1);
+
+    if (!fetchError && statusRows && statusRows.length > 0) {
+      await supabase
         .from('voting_status')
-        .update({ 
+        .update({
           voting_open: true,
           updated_at: new Date().toISOString()
         })
         .neq('id', 0);
-
-      if (updateError) throw updateError;
-
-      res.status(200).json({ success: true });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    } else {
+      await supabase
+        .from('voting_status')
+        .insert([{ id: 1, voting_open: true }]);
     }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Reset handler error:', error);
+    return res.status(500).json({ error: error.message || 'Errore reset' });
   }
 };

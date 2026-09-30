@@ -1,70 +1,79 @@
-const { createClient } = require('@supabase/supabase-js');
-
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || ''
-);
+const { getSupabase } = require('./_supabase');
 
 module.exports = async function handler(req, res) {
-  // Abilita CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
-  if (req.method === 'POST') {
-    try {
-      const { nickname, votes } = req.body || {};
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Metodo non consentito' });
+  }
 
-      if (!nickname || !votes || typeof votes !== 'object') {
-        return res.status(400).json({ error: 'Dati non validi' });
-      }
+  try {
+    const { nickname, votes } = req.body || {};
 
-      const cleanNickname = nickname.trim();
-
-      // Verifica stato votazioni
-      const { data: statusData, error: statusError } = await supabase
-        .from('voting_status')
-        .select('voting_open')
-        .order('id', { ascending: true })
-        .limit(1)
-        .single();
-
-      if (statusError) throw statusError;
-
-      if (statusData && !statusData.voting_open) {
-        return res.status(403).json({ error: 'Le votazioni sono chiuse' });
-      }
-
-      // Verifica se già votato
-      const { data: existingVotes, error: checkError } = await supabase
-        .from('votes')
-        .select('nickname')
-        .ilike('nickname', cleanNickname);
-
-      if (checkError) throw checkError;
-
-      if (existingVotes && existingVotes.length > 0) {
-        return res.status(400).json({ error: 'Hai già votato' });
-      }
-
-      // Inserisci voto
-      const { error: insertError } = await supabase
-        .from('votes')
-        .insert([{ nickname: cleanNickname, votes }]);
-
-      if (insertError) throw insertError;
-
-      res.status(200).json({ success: true });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    if (!nickname || typeof nickname !== 'string' || nickname.trim() === '') {
+      return res.status(400).json({ error: 'Nickname mancante' });
     }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+
+    if (!votes || typeof votes !== 'object') {
+      return res.status(400).json({ error: 'Dati votazione non validi' });
+    }
+
+    const cleanNickname = nickname.trim();
+    const supabase = getSupabase();
+
+    // Verifica stato votazioni
+    const { data: statusRows, error: statusError } = await supabase
+      .from('voting_status')
+      .select('voting_open')
+      .order('id', { ascending: true })
+      .limit(1);
+
+    if (statusError) {
+      console.error('Errore voting_status:', statusError);
+      return res.status(500).json({ error: `Errore database: ${statusError.message}` });
+    }
+
+    if (statusRows && statusRows.length > 0 && !statusRows[0].voting_open) {
+      return res.status(403).json({ error: 'Le votazioni sono chiuse' });
+    }
+
+    // Verifica se nickname ha già votato
+    const { data: existingVotes, error: checkError } = await supabase
+      .from('votes')
+      .select('nickname')
+      .ilike('nickname', cleanNickname);
+
+    if (checkError) {
+      console.error('Errore verifica voti esistenti:', checkError);
+      return res.status(500).json({ error: `Errore verifica voti: ${checkError.message}` });
+    }
+
+    if (existingVotes && existingVotes.length > 0) {
+      return res.status(400).json({ error: 'Hai già inviato la tua votazione' });
+    }
+
+    // Inserisci voto
+    const { error: insertError } = await supabase
+      .from('votes')
+      .insert([{ nickname: cleanNickname, votes }]);
+
+    if (insertError) {
+      console.error('Errore inserimento voto:', insertError);
+      return res.status(500).json({ 
+        error: `Errore salvataggio voto: ${insertError.message}. Controlla la policy INSERT su Supabase.` 
+      });
+    }
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error('Vote handler error:', error);
+    return res.status(500).json({ error: error.message || 'Errore durante l\'invio del voto' });
   }
 };

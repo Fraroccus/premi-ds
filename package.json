@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "echo 'Build successful'",
+    "build": "node -e \"const fs = require('fs'); fs.cpSync('public', 'dist', { recursive: true });\"",
     "start": "tsx server.ts",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
