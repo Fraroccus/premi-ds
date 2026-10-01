@@ -184,67 +184,6 @@
       ]
     },
     {
-      "id": "top-politically-incorrect",
-      "name": "Top Politically Incorrect",
-      "nominations": [
-        {
-          "id": "roccus",
-          "name": "Roccus",
-          "image": "images/roccus.jpg"
-        },
-        {
-          "id": "frolyc",
-          "name": "Frolyc",
-          "image": "images/frolyc.jpg"
-        },
-        {
-          "id": "fiuryk",
-          "name": "Fiuryk",
-          "image": "images/fiuryk.jpg"
-        },
-        {
-          "id": "maldo",
-          "name": "Maldo",
-          "image": "images/maldo.jpg"
-        },
-        {
-          "id": "gabusi",
-          "name": "Gabusi",
-          "image": "images/gabusi.jpg"
-        },
-        {
-          "id": "markkabbate",
-          "name": "Markkabbate",
-          "image": "images/markkabbate.jpg"
-        },
-        {
-          "id": "andyberry",
-          "name": "Andyberry",
-          "image": "images/andyberry.jpg"
-        },
-        {
-          "id": "halozkiller",
-          "name": "Halozkiller",
-          "image": "images/halozkiller.jpg"
-        },
-        {
-          "id": "peddi",
-          "name": "Peddi",
-          "image": "images/peddi.jpg"
-        },
-        {
-          "id": "bets",
-          "name": "Bets",
-          "image": "images/bets.jpg"
-        },
-        {
-          "id": "blackroll",
-          "name": "Blackroll",
-          "image": "images/blackroll.jpg"
-        }
-      ]
-    },
-    {
       "id": "top-incel",
       "name": "Top Incel",
       "nominations": [
@@ -857,6 +796,128 @@
     {
       "id": "top-shotcaller",
       "name": "Top Shotcaller",
+      "nominations": [
+        {
+          "id": "roccus",
+          "name": "Roccus",
+          "image": "images/roccus.jpg"
+        },
+        {
+          "id": "frolyc",
+          "name": "Frolyc",
+          "image": "images/frolyc.jpg"
+        },
+        {
+          "id": "fiuryk",
+          "name": "Fiuryk",
+          "image": "images/fiuryk.jpg"
+        },
+        {
+          "id": "maldo",
+          "name": "Maldo",
+          "image": "images/maldo.jpg"
+        },
+        {
+          "id": "gabusi",
+          "name": "Gabusi",
+          "image": "images/gabusi.jpg"
+        },
+        {
+          "id": "markkabbate",
+          "name": "Markkabbate",
+          "image": "images/markkabbate.jpg"
+        },
+        {
+          "id": "andyberry",
+          "name": "Andyberry",
+          "image": "images/andyberry.jpg"
+        },
+        {
+          "id": "halozkiller",
+          "name": "Halozkiller",
+          "image": "images/halozkiller.jpg"
+        },
+        {
+          "id": "peddi",
+          "name": "Peddi",
+          "image": "images/peddi.jpg"
+        },
+        {
+          "id": "bets",
+          "name": "Bets",
+          "image": "images/bets.jpg"
+        },
+        {
+          "id": "blackroll",
+          "name": "Blackroll",
+          "image": "images/blackroll.jpg"
+        }
+      ]
+    },
+    {
+      "id": "top-idf-soldier",
+      "name": "Top IDF Soldier",
+      "nominations": [
+        {
+          "id": "roccus",
+          "name": "Roccus",
+          "image": "images/roccus.jpg"
+        },
+        {
+          "id": "frolyc",
+          "name": "Frolyc",
+          "image": "images/frolyc.jpg"
+        },
+        {
+          "id": "fiuryk",
+          "name": "Fiuryk",
+          "image": "images/fiuryk.jpg"
+        },
+        {
+          "id": "maldo",
+          "name": "Maldo",
+          "image": "images/maldo.jpg"
+        },
+        {
+          "id": "gabusi",
+          "name": "Gabusi",
+          "image": "images/gabusi.jpg"
+        },
+        {
+          "id": "markkabbate",
+          "name": "Markkabbate",
+          "image": "images/markkabbate.jpg"
+        },
+        {
+          "id": "andyberry",
+          "name": "Andyberry",
+          "image": "images/andyberry.jpg"
+        },
+        {
+          "id": "halozkiller",
+          "name": "Halozkiller",
+          "image": "images/halozkiller.jpg"
+        },
+        {
+          "id": "peddi",
+          "name": "Peddi",
+          "image": "images/peddi.jpg"
+        },
+        {
+          "id": "bets",
+          "name": "Bets",
+          "image": "images/bets.jpg"
+        },
+        {
+          "id": "blackroll",
+          "name": "Blackroll",
+          "image": "images/blackroll.jpg"
+        }
+      ]
+    },
+    {
+      "id": "top-minaccia-per-la-societa",
+      "name": "Top Minaccia per la Società",
       "nominations": [
         {
           "id": "roccus",
