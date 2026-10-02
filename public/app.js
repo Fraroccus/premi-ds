@@ -879,8 +879,8 @@ function createSlideshow() {
         
         // Primi 3 per il podio
         const top3 = categoryResults.ranking.slice(0, 3);
-        // Tutti gli altri (dal 4° in poi)
-        const others = categoryResults.ranking.slice(3);
+        // Solo 4° e 5° posto (escludendo dal 6° in poi)
+        const top4and5 = categoryResults.ranking.slice(3, 5);
         
         slide.innerHTML = `
             <h2>${categoryResults.categoryName}</h2>
@@ -902,11 +902,11 @@ function createSlideshow() {
                 }).join('')}
             </div>
             
-            <!-- Altri classificati (dal 4° in poi - TUTTI) -->
-            ${others.length > 0 ? `
+            <!-- Solo 4° e 5° posto -->
+            ${top4and5.length > 0 ? `
                 <div class="other-rankings">
-                    <h3>Altri Classificati</h3>
-                    ${others.map((item, index) => {
+                    <h3>4° e 5° Posto</h3>
+                    ${top4and5.map((item, index) => {
                         const rank = index + 4;
                         return `
                             <div class="ranking-item">
