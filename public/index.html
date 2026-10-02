@@ -68,6 +68,22 @@
                 <button id="toggle-voting-btn" class="admin-btn">Chiudi/Apri Votazioni</button>
                 <button id="reset-votes-btn" class="admin-btn danger">Reset Votazioni</button>
                 <button id="show-results-btn" class="admin-btn">Mostra Risultati</button>
+                <button id="show-voters-btn" class="admin-btn info">👥 Votanti</button>
+                <div id="voters-panel" class="voters-panel" style="display: none;">
+                    <div class="voters-panel-header">
+                        <div class="voters-title-wrap">
+                            <h4>📋 Elenco Votanti</h4>
+                            <span id="voters-count-badge" class="voters-badge">0</span>
+                        </div>
+                        <div class="voters-panel-actions">
+                            <button id="refresh-voters-btn" class="voters-icon-btn" title="Aggiorna lista" type="button">🔄</button>
+                            <button id="close-voters-btn" class="voters-icon-btn" title="Chiudi" type="button">✕</button>
+                        </div>
+                    </div>
+                    <div id="voters-content" class="voters-content">
+                        <!-- Popolato dinamicamente da app.js -->
+                    </div>
+                </div>
                 <p id="voting-status"></p>
             </div>
         </div>
@@ -89,6 +105,35 @@
                     <button type="submit" id="modal-submit-btn" class="btn-primary">Accedi</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Dettaglio Voti Votante -->
+    <div id="voter-modal" class="modal-overlay">
+        <div class="modal-box voter-modal-box">
+            <div class="modal-header">
+                <div class="voter-modal-title">
+                    <div id="voter-modal-avatar" class="voter-avatar-large">?</div>
+                    <div>
+                        <h3 id="voter-modal-name">Scheda Voto</h3>
+                        <p id="voter-modal-date" class="voter-modal-date"></p>
+                    </div>
+                </div>
+                <button id="voter-modal-close-btn" class="modal-close" aria-label="Chiudi">&times;</button>
+            </div>
+            
+            <div id="voter-modal-body" class="voter-modal-body">
+                <!-- Voti per categoria generati dinamicamente -->
+            </div>
+
+            <div class="voter-modal-footer">
+                <button type="button" id="voter-modal-delete-btn" class="btn-danger-outline">
+                    🗑️ Elimina Voto
+                </button>
+                <button type="button" id="voter-modal-cancel-btn" class="btn-secondary">
+                    Chiudi
+                </button>
+            </div>
         </div>
     </div>
 

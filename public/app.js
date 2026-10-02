@@ -112,6 +112,7 @@ function setupEventListeners() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closePasswordModal();
+            closeVoterModal();
         }
         if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
             e.preventDefault();
@@ -123,6 +124,50 @@ function setupEventListeners() {
     document.getElementById('toggle-voting-btn').addEventListener('click', handleToggleVoting);
     document.getElementById('reset-votes-btn').addEventListener('click', handleResetVotes);
     document.getElementById('show-results-btn').addEventListener('click', handleShowResults);
+    
+    const showVotersBtn = document.getElementById('show-voters-btn');
+    if (showVotersBtn) {
+        showVotersBtn.addEventListener('click', handleToggleVoters);
+    }
+    
+    const refreshVotersBtn = document.getElementById('refresh-voters-btn');
+    if (refreshVotersBtn) {
+        refreshVotersBtn.addEventListener('click', () => loadVoters());
+    }
+    
+    const closeVotersBtn = document.getElementById('close-voters-btn');
+    if (closeVotersBtn) {
+        closeVotersBtn.addEventListener('click', () => {
+            const panel = document.getElementById('voters-panel');
+            if (panel) panel.style.display = 'none';
+            votersPanelVisible = false;
+        });
+    }
+
+    // Voter modal controls
+    const voterModalCloseBtn = document.getElementById('voter-modal-close-btn');
+    if (voterModalCloseBtn) {
+        voterModalCloseBtn.addEventListener('click', closeVoterModal);
+    }
+
+    const voterModalCancelBtn = document.getElementById('voter-modal-cancel-btn');
+    if (voterModalCancelBtn) {
+        voterModalCancelBtn.addEventListener('click', closeVoterModal);
+    }
+
+    const voterModalDeleteBtn = document.getElementById('voter-modal-delete-btn');
+    if (voterModalDeleteBtn) {
+        voterModalDeleteBtn.addEventListener('click', handleDeleteCurrentVoter);
+    }
+
+    const voterModal = document.getElementById('voter-modal');
+    if (voterModal) {
+        voterModal.addEventListener('click', (e) => {
+            if (e.target === voterModal) {
+                closeVoterModal();
+            }
+        });
+    }
     
     // Slideshow controls
     document.getElementById('prev-slide').addEventListener('click', () => changeSlide(-1));
@@ -528,6 +573,9 @@ async function handleResetVotes() {
         }
         alert('Votazioni resettate con successo');
         updateAdminStatus();
+        if (votersPanelVisible) {
+            loadVoters();
+        }
     } catch (error) {
         alert('Errore nel reset: ' + error.message);
     }
@@ -549,6 +597,241 @@ async function handleShowResults() {
         showScreen('presentation-screen');
     } catch (error) {
         alert('Errore nel caricamento dei risultati: ' + error.message);
+    }
+}
+
+// Stato visibilità pannello votanti
+let votersPanelVisible = false;
+
+// Admin: Toggle pannello votanti
+async function handleToggleVoters() {
+    const panel = document.getElementById('voters-panel');
+    if (!panel) return;
+
+    if (votersPanelVisible) {
+        panel.style.display = 'none';
+        votersPanelVisible = false;
+    } else {
+        panel.style.display = 'block';
+        votersPanelVisible = true;
+        await loadVoters();
+    }
+}
+
+// Helper per escape HTML
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// Stato votante attualmente ispezionato
+let currentInspectedVoter = null;
+
+// Admin: Carica lista votanti
+async function loadVoters() {
+    const content = document.getElementById('voters-content');
+    const badge = document.getElementById('voters-count-badge');
+    if (!content) return;
+
+    content.innerHTML = '<div class="voters-loading">⏳ Caricamento elenco votanti...</div>';
+
+    try {
+        const response = await fetch('/api/admin/voters');
+        const data = await response.json();
+
+        if (!response.ok) {
+            content.innerHTML = `<div class="voters-error">⚠️ ${data.error || 'Impossibile recuperare i votanti'}</div>`;
+            return;
+        }
+
+        const voters = data.voters || [];
+        if (badge) badge.textContent = voters.length;
+
+        if (voters.length === 0) {
+            content.innerHTML = '<div class="voters-empty">📭 Nessun voto registrato al momento.</div>';
+            return;
+        }
+
+        content.innerHTML = `
+            <div class="voters-list-grid">
+                ${voters.map((nickname) => `
+                    <div class="voter-card" data-nickname="${escapeHtml(nickname)}" title="Clicca per visualizzare o eliminare i voti di ${escapeHtml(nickname)}">
+                        <div class="voter-avatar">${(nickname.charAt(0) || '?').toUpperCase()}</div>
+                        <span class="voter-name">${escapeHtml(nickname)}</span>
+                        <span class="voter-card-hint" title="Visualizza voti">👁️</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        // Aggiungi click listener su ciascuna card votante
+        content.querySelectorAll('.voter-card').forEach((card) => {
+            card.addEventListener('click', () => {
+                const nick = card.dataset.nickname;
+                if (nick) {
+                    openVoterModal(nick);
+                }
+            });
+        });
+    } catch (error) {
+        content.innerHTML = `<div class="voters-error">⚠️ Errore di connessione: ${error.message}</div>`;
+    }
+}
+
+// Admin: Apri modale dettagli voti del votante
+async function openVoterModal(nickname) {
+    currentInspectedVoter = nickname;
+    const modal = document.getElementById('voter-modal');
+    const nameElem = document.getElementById('voter-modal-name');
+    const avatarElem = document.getElementById('voter-modal-avatar');
+    const dateElem = document.getElementById('voter-modal-date');
+    const bodyElem = document.getElementById('voter-modal-body');
+    const deleteBtn = document.getElementById('voter-modal-delete-btn');
+
+    if (!modal || !bodyElem) return;
+
+    if (nameElem) nameElem.textContent = nickname;
+    if (avatarElem) avatarElem.textContent = (nickname.charAt(0) || '?').toUpperCase();
+    if (dateElem) dateElem.textContent = 'Caricamento voti in corso...';
+    if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '🗑️ Elimina Voto';
+    }
+
+    bodyElem.innerHTML = `<div class="voters-loading">⏳ Caricamento scheda voti di <strong>${escapeHtml(nickname)}</strong>...</div>`;
+    modal.classList.add('active');
+
+    try {
+        const response = await fetch(`/api/admin/voter?nickname=${encodeURIComponent(nickname)}`);
+        const data = await response.json();
+
+        if (!response.ok || !data.voter) {
+            bodyElem.innerHTML = `<div class="voters-error">⚠️ ${data.error || 'Impossibile caricare i voti'}</div>`;
+            if (dateElem) dateElem.textContent = '';
+            return;
+        }
+
+        const voter = data.voter;
+        if (deleteBtn) deleteBtn.disabled = false;
+
+        if (dateElem) {
+            if (voter.created_at) {
+                const date = new Date(voter.created_at);
+                dateElem.textContent = 'Inviato il ' + date.toLocaleDateString('it-IT') + ' alle ' + date.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                dateElem.textContent = 'Voto registrato con successo';
+            }
+        }
+
+        const userVotesObj = voter.votes || {};
+        const renderedCategories = [];
+
+        config.categories.forEach(category => {
+            const catVotes = userVotesObj[category.id];
+            if (!catVotes) return;
+
+            const getNominee = (id) => {
+                if (!id) return null;
+                return category.nominations.find(n => n.id === id) || { id, name: id, image: '' };
+            };
+
+            const first = getNominee(catVotes.first);
+            const second = getNominee(catVotes.second);
+            const third = getNominee(catVotes.third);
+
+            const renderPodiumChip = (nom, placeClass, placeLabel, pts) => {
+                if (!nom) return `<div class="voter-podium-chip ${placeClass}"><em>Non assegnato</em></div>`;
+                return `
+                    <div class="voter-podium-chip ${placeClass}">
+                        <img src="${nom.image || ''}" class="voter-podium-img" alt="${escapeHtml(nom.name)}" onerror="this.style.display='none'">
+                        <div>
+                            <div><strong>${placeLabel} (${pts}):</strong> ${escapeHtml(nom.name)}</div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            renderedCategories.push(`
+                <div class="voter-cat-card">
+                    <div class="voter-cat-title">🏆 ${escapeHtml(category.name)}</div>
+                    <div class="voter-podium-row">
+                        ${renderPodiumChip(first, 'first', '1°', '4pt')}
+                        ${renderPodiumChip(second, 'second', '2°', '2pt')}
+                        ${renderPodiumChip(third, 'third', '3°', '1pt')}
+                    </div>
+                </div>
+            `);
+        });
+
+        if (renderedCategories.length === 0) {
+            bodyElem.innerHTML = '<div class="voters-empty">Nessuna preferenza registrata per questo utente.</div>';
+        } else {
+            bodyElem.innerHTML = renderedCategories.join('');
+        }
+    } catch (err) {
+        bodyElem.innerHTML = `<div class="voters-error">⚠️ Errore di connessione: ${err.message}</div>`;
+        if (dateElem) dateElem.textContent = '';
+    }
+}
+
+// Admin: Chiudi modale dettagli votante
+function closeVoterModal() {
+    const modal = document.getElementById('voter-modal');
+    if (modal) modal.classList.remove('active');
+    currentInspectedVoter = null;
+}
+
+// Admin: Cancella scheda e voti del votante selezionato
+async function handleDeleteCurrentVoter() {
+    if (!currentInspectedVoter) return;
+
+    const nickname = currentInspectedVoter;
+    const confirmed = confirm(
+        `Sei sicuro di voler eliminare definitivamente i voti di "${nickname}"?\n\n` +
+        `Questa operazione rimuoverà la sua scheda elettorale e sottrarrà i suoi punti dal conteggio e dalla classifica finale. L'utente potrà votare di nuovo se le votazioni sono aperte.`
+    );
+
+    if (!confirmed) return;
+
+    const deleteBtn = document.getElementById('voter-modal-delete-btn');
+    if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '⏳ Eliminazione...';
+    }
+
+    try {
+        const response = await fetch('/api/admin/delete-voter', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nickname })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert('Errore eliminazione: ' + (data.error || 'Impossibile eliminare il voto'));
+            if (deleteBtn) {
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = '🗑️ Elimina Voto';
+            }
+            return;
+        }
+
+        closeVoterModal();
+        alert(`Voto di "${nickname}" eliminato con successo!`);
+        await loadVoters();
+        await updateAdminStatus();
+    } catch (err) {
+        alert('Errore di connessione durante l\'eliminazione: ' + err.message);
+        if (deleteBtn) {
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '🗑️ Elimina Voto';
+        }
     }
 }
 

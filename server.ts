@@ -425,6 +425,130 @@ app.post('/api/admin/toggle-voting', async (_req: Request, res: Response) => {
   res.json({ votingOpen: votingData.votingOpen });
 });
 
+// API Admin: Elenco votanti
+app.get(['/api/admin/voters', '/api/voters'], async (_req: Request, res: Response) => {
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('votes')
+        .select('nickname');
+
+      if (error) throw error;
+
+      const voters = (data || []).map((row: any) => row.nickname).filter(Boolean);
+      const uniqueVoters = Array.from(new Set(voters)).sort((a: string, b: string) =>
+        a.localeCompare(b, undefined, { sensitivity: 'base' })
+      );
+
+      return res.json({ voters: uniqueVoters, count: uniqueVoters.length });
+    } catch (err: any) {
+      console.error('Errore recupero votanti Supabase:', err);
+      return res.status(500).json({ error: err.message || 'Errore database' });
+    }
+  }
+
+  // Fallback locale: estrae i nickname di chi ha votato
+  const votersFromVotes = votingData.votes.map((v) => v.nickname).filter(Boolean);
+  const allVoters = Array.from(new Set([...votersFromVotes, ...votingData.voters])).sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: 'base' })
+  );
+
+  res.json({ voters: allVoters, count: allVoters.length });
+});
+
+// API Admin: Recupera voti del singolo votante
+app.get('/api/admin/voter', async (req: Request, res: Response) => {
+  const nickname = ((req.query.nickname as string) || '').trim();
+  if (!nickname) {
+    return res.status(400).json({ error: 'Nickname mancante' });
+  }
+
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('votes')
+        .select('id, nickname, votes, created_at')
+        .ilike('nickname', nickname)
+        .order('id', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        return res.status(404).json({ error: `Nessun voto trovato per "${nickname}"` });
+      }
+
+      return res.json({ success: true, voter: data });
+    } catch (err: any) {
+      console.error('Errore recupero votante Supabase:', err);
+      return res.status(500).json({ error: err.message || 'Errore database' });
+    }
+  }
+
+  // Fallback locale
+  const voteRecord = votingData.votes.find(
+    (v) => v.nickname.toLowerCase() === nickname.toLowerCase()
+  );
+  if (!voteRecord) {
+    return res.status(404).json({ error: `Nessun voto trovato per "${nickname}"` });
+  }
+
+  res.json({
+    success: true,
+    voter: {
+      nickname: voteRecord.nickname,
+      votes: voteRecord.votes,
+      created_at: voteRecord.timestamp,
+    },
+  });
+});
+
+// API Admin: Elimina votante e i relativi voti
+const handleDeleteVoter = async (req: Request, res: Response) => {
+  const nickname = ((req.body && req.body.nickname) || (req.query.nickname as string) || '').toString().trim();
+  if (!nickname) {
+    return res.status(400).json({ error: 'Nickname mancante' });
+  }
+
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('votes')
+        .delete()
+        .ilike('nickname', nickname)
+        .select();
+
+      if (error) throw error;
+
+      return res.json({
+        success: true,
+        message: `Voto di ${nickname} eliminato con successo`,
+        deletedCount: data ? data.length : 1,
+      });
+    } catch (err: any) {
+      console.error('Errore eliminazione voto Supabase:', err);
+      return res.status(500).json({ error: err.message || 'Errore eliminazione voto' });
+    }
+  }
+
+  // Fallback locale
+  votingData.votes = votingData.votes.filter(
+    (v) => v.nickname.toLowerCase() !== nickname.toLowerCase()
+  );
+  votingData.voters = votingData.voters.filter(
+    (v) => v.toLowerCase() !== nickname.toLowerCase()
+  );
+  saveLocalData();
+
+  res.json({
+    success: true,
+    message: `Voto di ${nickname} eliminato con successo`,
+  });
+};
+
+app.post('/api/admin/delete-voter', handleDeleteVoter);
+app.delete('/api/admin/voter', handleDeleteVoter);
+
 // API Admin: Reset votazioni
 app.post('/api/admin/reset', async (_req: Request, res: Response) => {
   if (supabase) {
