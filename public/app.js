@@ -345,23 +345,26 @@ function handlePositionSelect(e) {
         userVotes[categoryId] = {};
     }
     
-    // Rimuovi selezione precedente per questa posizione
-    const previousNomination = Object.keys(userVotes[categoryId]).find(
-        key => userVotes[categoryId][key] === position
+    // Controlla se questo candidato ha già una posizione assegnata in questa categoria
+    const currentPositionOfNomination = Object.keys(userVotes[categoryId]).find(
+        pos => userVotes[categoryId][pos] === nominationId
     );
     
-    if (previousNomination === nominationId) {
-        // Deseleziona se clicchi di nuovo
+    // Se clicchi di nuovo sulla stessa posizione già attiva per questo candidato, deseleziona
+    if (currentPositionOfNomination === position) {
         delete userVotes[categoryId][position];
         updateVotingUI(categoryId);
+        updateProgress();
         return;
     }
     
-    if (previousNomination) {
-        delete userVotes[categoryId][previousNomination];
+    // Se questo candidato era già assegnato a un'altra posizione (es. 1° posto e ora clicchi 2° posto),
+    // lo rimuoviamo dalla posizione precedente per impedire che occupi più posti
+    if (currentPositionOfNomination) {
+        delete userVotes[categoryId][currentPositionOfNomination];
     }
     
-    // Aggiungi nuova selezione
+    // Assegna la nomination alla posizione selezionata (sovrascrivendo l'eventuale candidato precedente in tale posizione)
     userVotes[categoryId][position] = nominationId;
     
     updateVotingUI(categoryId);
@@ -451,6 +454,21 @@ async function handleSubmitVote() {
     
     if (!allCategoriesVoted) {
         alert('Devi selezionare 1°, 2° e 3° posto per tutte le categorie!');
+        return;
+    }
+
+    // Verifica che in ogni categoria le persone votate siano distinte
+    const duplicateCategory = config.categories.find(category => {
+        const votes = userVotes[category.id];
+        if (!votes) return false;
+        const { first, second, third } = votes;
+        return (first && second && first === second) ||
+               (first && third && first === third) ||
+               (second && third && second === third);
+    });
+
+    if (duplicateCategory) {
+        alert(`Nella categoria "${duplicateCategory.name}" non puoi votare la stessa persona per più posizioni. Seleziona 3 persone distinte!`);
         return;
     }
     

@@ -32,6 +32,23 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Dati votazione non validi' });
     }
 
+    // Verifica che non ci siano voti duplicati per la stessa persona nella stessa categoria
+    for (const catId of Object.keys(votes)) {
+      const catVotes = votes[catId];
+      if (catVotes && typeof catVotes === 'object') {
+        const { first, second, third } = catVotes;
+        if (
+          (first && second && first === second) ||
+          (first && third && first === third) ||
+          (second && third && second === third)
+        ) {
+          return res.status(400).json({
+            error: 'Non è consentito votare la stessa persona per più posizioni nella stessa categoria',
+          });
+        }
+      }
+    }
+
     const cleanNickname = nickname.trim();
     const supabase = createClient(supabaseUrl, supabaseKey);
 

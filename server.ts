@@ -210,6 +210,22 @@ app.post('/api/vote', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Dati non validi' });
   }
 
+  // Verifica che non ci siano voti duplicati per la stessa persona nella stessa categoria
+  for (const [catId, catVotes] of Object.entries(votes as Record<string, any>)) {
+    if (catVotes && typeof catVotes === 'object') {
+      const { first, second, third } = catVotes;
+      if (
+        (first && second && first === second) ||
+        (first && third && first === third) ||
+        (second && third && second === third)
+      ) {
+        return res.status(400).json({
+          error: 'Non è consentito votare la stessa persona per più posizioni nella stessa categoria',
+        });
+      }
+    }
+  }
+
   if (supabase) {
     try {
       const { data: statusData, error: statusError } = await supabase
